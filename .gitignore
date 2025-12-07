@@ -1,0 +1,18 @@
+# Arduino IDE / ESP32 のビルドキャッシュと一時ファイル
+build/
+*.bin
+*.elf
+*.hex
+*.lst
+*.map
+*.suo
+
+# OCRエンジン
+yomitoku/
+
+# PlatformIO
+# .pio/
+# .pioenvs/
+
+# 機密情報
+# secrets.h
