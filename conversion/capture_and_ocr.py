@@ -4,7 +4,7 @@ import subprocess
 import sys
 import time
 
-CAMERA_INDEX = 1
+CAMERA_INDEX = 0
 OUTPUT_FILENAME = "captured_image.png"
 YOMITOKU_SCRIPT = "yomitoku" # 環境によっては 'python yomitoku.py'かも
 YOMITOKU_ARGS = "-f md -o results -v --figure"

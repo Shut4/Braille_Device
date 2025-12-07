@@ -1,9 +1,5 @@
-import sys
-from md_to_hiragana import to_hiragana, extract_clean_text_from_md
-# import re
-
-# .mdファイルをコマンドライン引数として受け取り、
-# 抽出された純粋なテキストをひらがな変換し、バイナリ形式に変換したものをターミナルに出力する
+# .mdファイルをコマンドライン引数として受け取り、抽出された純粋なテキストをひらがな変換後
+# バイナリ形式に変換したものをターミナルに出力するとともに.txtファイルとして保存する
 
 
 # 現時点での課題・TODOリスト:
@@ -17,6 +13,9 @@ from md_to_hiragana import to_hiragana, extract_clean_text_from_md
 # * 外字符、二重大文字符、アクセント符の実装検討
 # --------------------------------------------------------
 
+import sys
+from md_to_hiragana import to_hiragana, extract_clean_text_from_md
+# import re
 
 # --------------------------------------------------------
 # 点字信号とマーカー定義 (バイナリ形式: 1=ON, 0=OFF)
