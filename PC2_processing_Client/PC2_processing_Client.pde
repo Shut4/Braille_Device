@@ -1,3 +1,7 @@
+// PC1から送信された画像データをPC2が受信するために、PC2で実行するProcessingコード。
+// .inoファイルと同様に.pdeファイルも、ファイル名と同じ名前のディレクトリに配置する必要あり。
+
+
 import processing.net.*; //ネットワークライブラリの使用宣言
 final int MAX_CLIENT = 2;
 Server   myServer; //サーバのデータ構造
@@ -101,7 +105,7 @@ void clientEvent(Client RecvClient){
           idx += 3;
         }
         RecvImg.updatePixels( ); //領域のアップデート
-        RecvImg.save("imgs/received.png");
+        RecvImg.save("received_imgs/test1.png");
         state = 0;   //状態遷移
         myServer.write(2); // 画像データの受信完了をクライアントに通知
       }
