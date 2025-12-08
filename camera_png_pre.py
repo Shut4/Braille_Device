@@ -1,12 +1,12 @@
-import cv2
-import os
+# PC1カメラ撮影用のPythonコード。Spaceキーで撮影し、PNG形式で指定したディレクトリに指定した名前で保存する。
 
-#PC1カメラ撮影用の.pyコード
+import cv2
+import os # ファイルパス操作用のモジュール(ファイルやディレクトリを移動したり、作成したりするために使う)
 
 # --- 設定 ---
 CAMERA_INDEX = 0      # 使用するカメラのデバイスID (通常0が内蔵カメラ)
-OUTPUT_FILENAME = "captured_image.png"
-OUTPUT_DIR = "imgs/captured_images" # 画像を保存するディレクトリ
+OUTPUT_FILENAME = "test1.png"
+OUTPUT_DIR = "imgs/captured_images" # 画像を保存するディレクトリ。data/
 
 # ----------------------------------------------------
 # カメラ初期化
@@ -20,9 +20,7 @@ if not cap.isOpened():
 
 print("カメラ起動中... [Spaceキー]で撮影し保存、[Escキー]で終了します。")
 
-# ----------------------------------------------------
-# 映像表示とキャプチャループ
-# ----------------------------------------------------
+
 while True:
     ret, frame = cap.read()  # 1フレーム分取得
     if not ret:
@@ -52,7 +50,7 @@ while True:
         else:
             print(f" 画像の保存に失敗しました。")
 
-        break # 保存後にループを抜ける
+        break
 
     # Escキー (ASCII 27) で終了
     elif key == 27:

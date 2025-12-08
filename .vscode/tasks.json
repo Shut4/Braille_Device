@@ -1,13 +1,109 @@
+// ProcessingをVSCodeから実行するためのタスク定義ファイル。これがないと、VSCodeからProcessingスケッチを直接実行できない。
+// また、このファイルは.vscodeディレクトリ内に配置する必要がある。
+
+
+// {
+//     "version": "2.0.0",
+//     "tasks": [
+//         // ----------------------------------------------------------------------
+//         // タスク 1: PC3 (点字サーバー) - ネットワーク受信とシリアル送信の待ち受け
+//         // ----------------------------------------------------------------------
+//         {
+//             "label": "Run PC3 Tenji Server (tennji_serverBa.pde)",
+//             "type": "process",
+//             "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
+//             "args": [
+//                 "--force",
+//                 // PC3のスケッチフォルダパスを指定
+//                 "--sketch=${workspaceFolder}\\未検証分\\PC3\\tennji_serverBa",
+//                 "--run"
+//             ],
+//             "group": "build",
+//             "presentation": {
+//                 "reveal": "always",
+//                 "panel": "new",
+//                 "group": "processing-servers"
+//             }
+//         },
+
+//         // ----------------------------------------------------------------------
+//         // タスク 2: PC2 (画像サーバー) - 画像受信とPython実行の待ち受け
+//         // ----------------------------------------------------------------------
+//         {
+//             "label": "Run PC2 Img Server (img_Net_Server.pde)",
+//             "type": "process",
+//             "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
+//             "args": [
+//                 "--force",
+//                 // PC2のスケッチフォルダパスを指定
+//                 "--sketch=${workspaceFolder}\\未検証分\\PC2\\img_Net_Server",
+//                 "--run"
+//             ],
+//             "group": {
+//                 "kind": "build",
+//                 "isDefault": true // このタスクをデフォルトのビルドタスクに設定
+//             },
+//             "presentation": {
+//                 "reveal": "always",
+//                 "panel": "new",
+//                 "group": "processing-servers"
+//             }
+//         },
+
+//         // ----------------------------------------------------------------------
+//         // タスク 3: PC1 (画像送信クライアント) - 画像の手動送信
+//         // ----------------------------------------------------------------------
+//         {
+//             "label": "Run PC1 Img Client (Img_Net_client.pde)",
+//             "type": "process",
+//             "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
+//             "args": [
+//                 "--force",
+//                 // PC1のスケッチフォルダパスを指定
+//                 "--sketch=${workspaceFolder}\\未検証分\\PC1\\Img_Net_client",
+//                 "--run"
+//             ],
+//             "group": "build",
+//             "presentation": {
+//                 "reveal": "always",
+//                 "panel": "new",
+//                 "group": "processing-clients"
+//             }
+//         }
+//     ]
+// }
+
+
+
 {
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Processing Test",
+      "label": "Run Processing Test(PC2_processing_Client)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
         //"--sketch=C:\\Users\\syuuu\\workspace\\PBL_imgproc2\\processing\\PC3_Braille_Serial_Client",
+        "--sketch=${workspaceFolder}\\PC2_processing_Client",
+        "--run"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+
+    {
+      "label": "Run Processing Test(PC2_processing_Server)",
+      "type": "process",
+      "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
+      "args": [
+        "--force",
         "--sketch=${workspaceFolder}\\PC2_processing_Server",
         "--run"
       ],

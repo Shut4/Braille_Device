@@ -41,8 +41,8 @@ PC2 は、本システム内で次の処理を担当します。
 
 * OS: Windows
 * Python 3.8 以上
-* Processing 4.3.4(最新バージョンだと動作しないよ！気をつけて。参考サイト:https://qiita.com/Hutaba-Makura/items/a7e49b6b43633fa5b2e5)
-* OCRエンジン: yomitoku
+* Processing 4.3.4(最新バージョンだと動作しないよ！気をつけてね☺参考サイト:https://qiita.com/Hutaba-Makura/items/a7e49b6b43633fa5b2e5)
+* OCRエンジン: yomitoku(25.3)
 
 ### Pythonライブラリ
 
@@ -130,7 +130,7 @@ PC2 の画面に画像が表示され、`imgss/received.png` に保存される�
 
 ```bash
 // yomitoku単体での動作時
-yomitoku received.png -f md -o results
+yomitoku C:\Users\syuuu\workspace\PBL_imgproc2\PC2_processing_Client\received_imgs\test1.png -f md -o results -v --figure
 ```
 
 #### ● 点字信号生成
@@ -166,3 +166,41 @@ python conversion/md_to_binary2.py imgs/received.md
 * test.pde や md_to_binary2.py のレビュー
 
 も作成可能
+
+
+# Changelog
+
+## 2025-12-07
+### Added
+- `main_realtime_automation.py` に関する情報を README に追加
+
+### Changed
+- 外部ライブラリのインストール手順を更新
+  - 新たに以下のライブラリを追加
+    - `opencv-python`
+    - `janome`
+    - `pyserial`
+
+### Notes
+- ライブラリは以下のコマンドでインストール可能:
+  ```bash
+  pip install opencv-python janome pyserial
+
+## 2025-12-08
+### Notes
+- 一連の動作に関して手順を確認した。※PC3のシリアル通信手前まで
+   - camera_capture_png_pre.pyで画像(data/test1.png)を撮影(PC1)
+   - Processingコード(VSCode環境のPC2_processing_Client.pde)を実行(Ctrl+Pから選択)し待機。(PC2)
+   - 撮影した画像をProcessingコード(Img_Net_client.pde)によりPC2へ送信(PC1)
+   - 撮影した画像データを入力としてyomitokuを実行(PC2)。ターミナルに以下を入力する。
+   ```bash
+   yomitoku C:\Users\syuuu\workspace\PBL_imgproc2\PC2_processing_Client\received_imgs\test1.png -f md -o results -v --figure
+   ```
+   - yomitokuのOCR処理で生成されたresults/received_imgs_test1_p1.mdをもとにして、バイナリ文字列に変換する。
+   ```bash
+   python conversion/md_to_binary2.py results/received_imgs_test1_p1.md
+   ```
+   ※上記に関して、現在はPC2からPC3へ文字列(final_binary_string)を渡すコードを追加したファイルを作成中...(md_to_binary3.py)
+
+- 班のメンバーにわかりやすいように、各コードに説明文を追加した。
+- 

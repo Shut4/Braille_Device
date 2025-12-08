@@ -1,4 +1,5 @@
 import processing.serial.*;
+from
 
 // --- シリアル設定 ---
 Serial controlPort;
@@ -24,7 +25,7 @@ void setup() {
 }
 
 void draw() {
-  background(#4A90E2); 
+  background(#4A90E2);
   fill(255);
   text("PC3: AE-FT234X シリアル制御", 20, 30);
   text("Status: " + statusMessage, 20, 60);
