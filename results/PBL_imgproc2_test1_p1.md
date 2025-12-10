@@ -1,6 +1,6 @@
 はじめに ま
 
-<img src="figures/received_imgs_test1_p1_figure_0.png" width="200px"><br>
+<img src="figures/PBL_imgproc2_test1_p1_figure_0.png" width="200px"><br>
 # ROS とは何か
 
 Robot Operating System \(ROS\) の次世代バージョンである ROS 221 は非常に大<br>きな目標を掲げたロボットアプリケーション開発のためのミドルウェアです。前身<br>である ROS 182 は公式オンライン Wiki 「ROS Wiki」の日本語版\#3 では、以下の文<br>章から書き始められています。
