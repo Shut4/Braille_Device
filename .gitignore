@@ -13,10 +13,3 @@ build/
 
 # OCRエンジン
 yomitoku/
-
-# PlatformIO
-# .pio/
-# .pioenvs/
-
-# 機密情報
-# secrets.h

@@ -1,9 +1,11 @@
 
 ---
 
-# PC2
+# 点字デバイスPC2役割説明
 
-## 画像受信・OCR・点字信号変換サーバー ドキュメント(説明されているファイル以外は無視して)
+![完成理想図](device.png)
+
+## 画像受信・OCR・点字信号変換サーバー ドキュメント(説明されているファイル以外は無視)
 
 本ドキュメントは、PC2 における **役割・環境構築・スクリプト仕様・実行フロー** をまとめたものです。
 PC2 は、**画像受信 → OCR → テキスト整形 → 点字信号生成** を担う中核サーバーです
@@ -12,7 +14,7 @@ PC2 は、**画像受信 → OCR → テキスト整形 → 点字信号生成**
 
 ## PC2 の役割
 
-PC2 は、本システム内で次の処理を担当します。
+PC2 は、本システム内で次の処理を担当する
 
 1. **画像受信**
    PC1（撮影端末）から送られてくる画像データを Processing (ここではVSCode環境を使用)により受信。
@@ -41,7 +43,7 @@ PC2 は、本システム内で次の処理を担当します。
 
 * OS: Windows
 * Python 3.8 以上
-* Processing 4.3.4(最新バージョンだと動作しないよ！気をつけてね☺参考サイト:https://qiita.com/Hutaba-Makura/items/a7e49b6b43633fa5b2e5)
+* Processing 4.3.4(最新バージョンだと動作しない。気をつけて。参考サイト:https://qiita.com/Hutaba-Makura/items/a7e49b6b43633fa5b2e5)
 * OCRエンジン: yomitoku(25.3)
 
 ### Pythonライブラリ
@@ -161,11 +163,6 @@ python conversion/md_to_binary2.py imgs/received.md
 
 ---
 
-必要であれば、
-* 自動化用のバッチスクリプト
-* test.pde や md_to_binary2.py のレビュー
-
-も作成可能
 
 
 # Changelog
@@ -189,7 +186,7 @@ python conversion/md_to_binary2.py imgs/received.md
 ## 2025-12-08
 ### Notes
 - 一連の動作に関して手順を確認した。※PC3のシリアル通信手前まで
-   - camera_capture_png_pre.pyで画像(data/test1.png)を撮影(PC1)
+   - camera_png_pre.pyで画像(data/test1.png)を撮影(PC1)
    - Processingコード(VSCode環境のPC2_processing_Client.pde)を実行(Ctrl+Pから選択)し待機。(PC2)
    - 撮影した画像をProcessingコード(Img_Net_client.pde)によりPC2へ送信(PC1)
    - 撮影した画像データを入力としてyomitokuを実行(PC2)。ターミナルに以下を入力する。
@@ -201,6 +198,4 @@ python conversion/md_to_binary2.py imgs/received.md
    python conversion/md_to_binary2.py results/received_imgs_test1_p1.md
    ```
    ※上記に関して、現在はPC2からPC3へ文字列(final_binary_string)を渡すコードを追加したファイルを作成中...(md_to_binary3.py)
-
-- 班のメンバーにわかりやすいように、各コードに説明文を追加した。
-- 
+-

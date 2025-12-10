@@ -37,14 +37,14 @@ void keyPressed() {
     statusMessage = "ERROR: Port not open.";
     return;
   }
-  
+
   // TキーでバイナリテストデータをESP32に送信 (データ格納用)
   if (key == 't' || key == 'T') {
     controlPort.write(testBrailleData);
     controlPort.write('\n'); // 終端文字
     statusMessage = "Sent NEW DATA ('T'). Total Chars: " + testBrailleData.length() / 6;
   }
-  
+
   // Nキーで次のページコマンドを送信
   else if (key == 'n' || key == 'N') {
     controlPort.write('n');
