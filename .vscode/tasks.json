@@ -1,18 +1,16 @@
 // ProcessingをVSCodeから実行するためのタスク定義ファイル。これがないと、VSCodeからProcessingスケッチを直接実行できない。
 // また、このファイルは.vscodeディレクトリ内に配置する必要がある。
 
-
 {
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Processing Test(PC2_processing_Client)",
+      "label": "Run Processing Test(PC2_processing_Server)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        //"--sketch=C:\\Users\\syuuu\\workspace\\PBL_imgproc2\\processing\\PC3_Braille_Serial_Client",
-        "--sketch=${workspaceFolder}\\PC2_processing_Client",
+        "--sketch=${workspaceFolder}\\PC2_processing_Server",
         "--run"
       ],
       "group": {
@@ -26,12 +24,12 @@
     },
 
     {
-      "label": "Run Processing Test(PC2_processing_Server)",
+      "label": "Run Processing Test(PC2_processing_Tenji_Server)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        "--sketch=${workspaceFolder}\\PC2_processing_Server",
+        "--sketch=${workspaceFolder}\\PC2_processing_Tenji_Server",
         "--run"
       ],
       "group": {
@@ -62,74 +60,5 @@
         "panel": "new"
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // {
-    //   "label": "PC1_ImgNet_Client",
-    //   "type": "process",
-    //   "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
-    //   "args": [
-    //     "--force",
-    //     "--sketch=${workspaceFolder}\\PC1_ImgNet_Client",
-    //     "--run"
-    //   ],
-    //   "group": {
-    //     "kind": "build",
-    //     "isDefault": true
-    //   },
-    //   "presentation": {
-    //     "reveal": "always",
-    //     "panel": "new"
-    //   }
-    // },
-
-    // {
-    //   "label": "PC2_ImgNet_Server",
-    //   "type": "process",
-    //   "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
-    //   "args": [
-    //     "--force",
-    //     "--sketch=${workspaceFolder}\\PC2_ImgNet_Server",
-    //     "--run"
-    //   ],
-    //   "group": {
-    //     "kind": "build",
-    //     "isDefault": true
-    //   },
-    //   "presentation": {
-    //     "reveal": "always",
-    //     "panel": "new"
-    //   }
-    // },
-
-    //   {
-    //   "label": "PC3_Tenji_Server",
-    //   "type": "process",
-    //   "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
-    //   "args": [
-    //     "--force",
-    //     "--sketch=${workspaceFolder}\\PC3_Tenji_Server",
-    //     "--run"
-    //   ],
-    //   "group": {
-    //     "kind": "build",
-    //     "isDefault": true
-    //   },
-    //   "presentation": {
-    //     "reveal": "always",
-    //     "panel": "new"
-    //   }
-    // }
   ]
 }

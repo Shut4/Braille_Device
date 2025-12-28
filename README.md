@@ -168,8 +168,6 @@ python conversion/md_to_binary2.py imgs/received.md
 # Changelog
 
 ## 2025-12-07
-### Added
-- `main_realtime_automation.py` に関する情報を README に追加
 
 ### Changed
 - 外部ライブラリのインストール手順を更新
@@ -186,16 +184,21 @@ python conversion/md_to_binary2.py imgs/received.md
 ## 2025-12-08
 ### Notes
 - 一連の動作に関して手順を確認した。※PC3のシリアル通信手前まで
-   - camera_png_pre.pyで画像(data/test1.png)を撮影(PC1)
-   - Processingコード(VSCode環境のPC2_processing_Client.pde)を実行(Ctrl+Pから選択)し待機。(PC2)
+   - camera_png.pyで画像(data/test1.png)を撮影(PC1)
+   - Processingコード(VSCode環境のPC2_processing_Server.pde)を実行(Ctrl+Pから選択)し待機。(PC2)
    - 撮影した画像をProcessingコード(Img_Net_client.pde)によりPC2へ送信(PC1)
    - 撮影した画像データを入力としてyomitokuを実行(PC2)。ターミナルに以下を入力する。
    ```bash
-   yomitoku C:\Users\syuuu\workspace\PBL_imgproc2\PC2_processing_Client\received_imgs\test1.png -f md -o results -v --figure
+   yomitoku C:\Users\syuuu\workspace\PBL_imgproc2\PC2_processing_Server\received_imgs\test1.png -f md -o results -v --figure
    ```
    - yomitokuのOCR処理で生成されたresults/received_imgs_test1_p1.mdをもとにして、バイナリ文字列に変換する。
    ```bash
    python conversion/md_to_binary2.py results/received_imgs_test1_p1.md
    ```
-   ※上記に関して、現在はPC2からPC3へ文字列(final_binary_string)を渡すコードを追加したファイルを作成中...(md_to_binary3.py)
--
+   ※上記に関して、現在はPC2からPC3へ文字列(final_binary_string)を渡すコードを追加したファイルを作成中...(md_to_binary2.py)
+
+
+## 2025-12-26
+### Notes
+- PC3のProcessingコード(client)から、シリアル通信を経て、ESP32へデータを送信可能になった。
+(VSCode環境のPC2_processing_Tenji_Server.pde起動→ProcessingIDEのtenji_clientBa.pde起動→sketch_dec26bを書き込み、成功)

@@ -1,28 +1,20 @@
-# .mdファイルをコマンドライン引数として受け取り、抽出された純粋なテキストをひらがな変換後
-# バイナリ形式に変換したものをターミナルに出力するとともに.txtファイルとして保存する
+# コマンドラインからのファイル実行時に.mdファイルを読み込み、
+# 文字列が格納された変数(final_binary_string)を表示する。
 
-
-# 現時点での課題・TODOリスト:
-# --------------------------------------------------------
-# * 点字デバイス表示の際に濁点などの2セットで一文字が途切れたら面倒なのでそこ改良する必要あり
-# * 「わたしは」の「は」や、「本屋へ」の「へ」は、点字では話すように「わ」「え」と書くため、そこを修正する必要あり
-# * 点字で文を書く時には、意味のまとまりごとに1マスあけて書く必要あり
-# * 「う段」の音がのびる時はのばす記号を使う。「きょうは」が「きょーわ」になる
-# * 外国語引用符(外国文字が、文または語句になっているときに挟むように使用する符号)の実装検討
-# * すべての文字が大文字の場合は、外字符の後に二重大文字符を置く
-# * 外字符、二重大文字符、アクセント符の実装検討
-# --------------------------------------------------------
+# 2025-12-08 コード理解済
+# 濁音・拗音の処理の部分が修正する必要あり
 
 import sys
-from md_to_hiragana import to_hiragana, extract_clean_text_from_md
-# import re
+# システムモジュール。コマンドライン引数の取得、プログラムの終了、
+# 標準入出力を操作したりするために使用。
+import re # 正規表現モジュール
+from pykakasi import kakasi # 日本語の漢字・カタカナ・ひらがなを変換できるライブラリ。
 
 # --------------------------------------------------------
-# 点字信号とマーカー定義 (バイナリ形式: 1=ON, 0=OFF)
+# 点字信号定義
 # --------------------------------------------------------
 BRAILLE_SIGNAL_MAP = {
-    # 中身正誤チェック済み◎
-    # 変換は'左上,左中,左下,右上,右中,右下' の順序に従う
+    # 6桁のバイナリ文字列変換に関して、対応関係は'左上,左中,左下,右上,右中,右下' の順序に従う
 
     # ひらがな
     'あ': '100000', 'い': '110000', 'う': '100100', 'え': '110100', 'お': '010100',
@@ -47,95 +39,153 @@ BRAILLE_SIGNAL_MAP = {
     'u': '101001', 'v': '111001', 'w': '010111', 'x': '101101', 'y': '101111',
     'z': '101011',
 
-    # 数字 (0-9)はアルファベットの a-j と同じパターンなため省略
+    # 数字は'a'〜'j'の点字表現と重なっている部分があるため、それを利用
+    # '1' -> 'a', '2' -> 'b', ..., '0' -> 'j'
 }
 
-DAKUTEN_MARKER = '000010'    # 濁点符(濁点を表す符号)
-HANDAKUTEN_MARKER = '000001' # 半濁点符(半濁点を表す符号)
-NUMBER_MARKER = '001111'     # 数符(数を表す符号)
-CAPITAL_MARKER = '000001'    # 大文字符(大文字を表す符号)
+DAKUTEN_MARKER = '000010' # 濁点の点字マーカー
+HANDAKUTEN_MARKER = '000001' # 半濁点の点字マーカー
+NUMBER_MARKER = '001111' # 数字の点字マーカー。これを数字の前に挿入することで、a〜jを1〜0として解釈させる。
+CAPITAL_MARKER = '000001'# 大文字の点字マーカー。これを大文字の前に挿入する。
 
-
-# 濁音・半濁音のマッピング
-# 'が' => ('か', 濁点符) のようにベースの文字とマーカーの"セット"とした
-VOICED_MAP = {
+VOICED_MAP = { # 濁音・半濁音の対応表
     'が': ('か', DAKUTEN_MARKER), 'ぎ': ('き', DAKUTEN_MARKER), 'ぐ': ('く', DAKUTEN_MARKER), 'げ': ('け', DAKUTEN_MARKER), 'ご': ('こ', DAKUTEN_MARKER),
     'ざ': ('さ', DAKUTEN_MARKER), 'じ': ('し', DAKUTEN_MARKER), 'ず': ('す', DAKUTEN_MARKER), 'ぜ': ('せ', DAKUTEN_MARKER), 'ぞ': ('そ', DAKUTEN_MARKER),
     'だ': ('た', DAKUTEN_MARKER), 'ぢ': ('ち', DAKUTEN_MARKER), 'づ': ('つ', DAKUTEN_MARKER), 'で': ('て', DAKUTEN_MARKER), 'ど': ('と', DAKUTEN_MARKER),
     'ば': ('は', DAKUTEN_MARKER), 'び': ('ひ', DAKUTEN_MARKER), 'ぶ': ('ふ', DAKUTEN_MARKER), 'べ': ('へ', DAKUTEN_MARKER), 'ぼ': ('ほ', DAKUTEN_MARKER),
+
     'ぱ': ('は', HANDAKUTEN_MARKER), 'ぴ': ('ひ', HANDAKUTEN_MARKER), 'ぷ': ('ふ', HANDAKUTEN_MARKER), 'ぺ': ('へ', HANDAKUTEN_MARKER), 'ぽ': ('ほ', HANDAKUTEN_MARKER)
 }
 
 
 # --------------------------------------------------------
-# 点字のバイナリ信号への変換
+# Markdownクリーンアップとひらがな変換の関数定義
 # --------------------------------------------------------
+
+def extract_clean_text_from_md(file_path):
+    """
+    Markdownファイル(.md)を引数とし、不要な要素を除去してクリーンな文字列を抽出する。
+    ファイルが存在せず読み込みに失敗した場合は None を返す。
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            # open()関数は、Pythonファイルを開き、中身を読み込むための組み込み関数。
+            # 第一引数にファイルパス、第二引数にモード('r'は読み取り専用モード)、encodingで文字コードを指定。
+            # 開いたファイルオブジェクトを変数fに代入している。
+            md_content = f.read() # read()メソッドでファイル全体の内容を文字列として一括読み込み
+    except FileNotFoundError:
+        return None
+    except Exception:
+        return None
+
+    text = md_content # 文字列が格納された変数
+    # re.sub()は、文字列の中で パターンに一致した部分を置換する役割
+    text = re.sub(r'<[^>]*>', '', text)          # HTMLタグ除去
+    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text) # リンク除去
+    text = re.sub(r'^\s*#+\s*', '', text, flags=re.MULTILINE) # 見出し除去
+    text = re.sub(r'[*_`]', '', text)            # 強調・コード除去
+    text = re.sub(r'\n{2,}', '\n', text)         # 連続改行を統一
+
+    return text.strip()
+    # strip()メゾットで文字列の前後の空白や改行を削除する。
+    # 半角スペース,\t, \n, \rなど
+
+
+def to_hiragana(text):
+    """
+    文字列(今回はtext.strip())を受け取り、可能な文字をすべてひらがなに変換して文字列を返す。
+    """
+    try:
+        kakasi_inst = kakasi() # pykakasiライブラリのkakasiクラスのインスタンスを作成
+        kakasi_inst.setMode("J", "H").setMode("K", "H").setMode("H", "H")
+        # 変換モードを設定(J: 漢字, K: カタカナ, H: ひらがな)
+        # 例えばsetMode("J", "H") は、漢字をひらがなに変換する設定
+        # 今回はすべてひらがなに変換する
+        conv = kakasi_inst.getConverter()# 実際に変換を行うコンバータ(変換器)を取得
+        return conv.do(text).lower().replace('\u3000', ' ').strip()
+        # do()メソッドで変換を実行、lower()で英字が含まれていた場合に小文字に変換、
+        # replace()で全角スペース（Unicode U+3000）を半角スペースに置換、
+        # strip()で前後の空白を削除して返す
+
+    except AttributeError:
+        # pykakasiエラー時のフォールバック処理 (このロジックは完全なものとは限らない)
+        return text.lower().replace('\u3000', ' ').strip() # 漢字やカタカナはそのまま残る可能性あり
+
+
+# --------------------------------------------------------
+# 点字バイナリ信号への変換関数 (ロジック維持)
+# --------------------------------------------------------
+
 def to_braille_signals(text):
     """
-    ひらがな変換後のテキストを受け取り、6桁のバイナリ信号リストに変換する。
+    文字列(今回はひらがな変換後のテキスト)を受け取り、6桁のバイナリ信号リストに変換する。
     """
-    signals = []
-    i = 0
-    is_number = False
-    is_caps = False
+    # 初期化
+    signals = [] # 出力となる点字信号のリスト
+    i = 0 # 文字列インデックス
+    is_number = False # 数字モードフラグ
+    is_caps = False # 大文字モードフラグ
+
 
     while i < len(text):
         char = text[i]
         next_char = text[i+1] if i+1 < len(text) else ''
+        # next_charは次の文字を見て「拗音（ゃゅょ）」などを判定するために使用
 
-        # 記号処理（数字、アルファベット）
-        # BRAILLE_SIGNAL_MAPが認識できる基本的な文字パターン、
-        # （主に小文字のアルファベット）に一時的に変換するための変数
-        char_for_pattern = char
+        # --- 数字/大文字符の挿入ロジック ---
+        char_for_pattern = char # 点字パターン照合用の文字変数
 
         # 数字処理: 数符挿入
-        if char.isdigit():
+        if char.isdigit():# 文字列が数字かどうかを判定
             if not is_number:
-                signals.append(NUMBER_MARKER)
+                signals.append(NUMBER_MARKER)# 数符（NUMBER_MARKER） を挿入。
                 is_number = True
-            # 数字はアルファベットの a-j のパターンを使用
-            # 下の1行で、点字の変換ロジックの中で数字の文字 ('1', '2', '3'...) を
-            # 対応するアルファベットの文字 ('a', 'b', 'c'...) に変換する
-            char_for_pattern = chr(ord('a') + int(char))
+                if char == '0':
+                    char_for_pattern = 'j'
+                else:
+                    char_for_pattern = chr(ord('a') + int(char) - 1)
+            # chr()関数は、数値（Unicodeコードポイント）を対応する文字に変換するための組み込み関数。
+            # ord()関数は、文字を対応するUnicodeコードポイント（整数）に変換するための組み込み関数。
+            # '1' -> 'a', '2' -> 'b', ..., '0' -> 'j'
         else:
-            # 数字の連鎖が途切れたらフラグをリセット
-            if is_number and not char.isalpha(): # アルファベットの直前ではリセットしない
-                 is_number = False
-            char_for_pattern = char # この行不要じゃね？
+            if is_number and not char.isalpha():# 数字モード終了判定
+                is_number = False
+            char_for_pattern = char
+            # 数字以外の文字(アルファベット、ひらがな)はそのままcharを使用。
+            # 漢字が混入している可能性もある。
 
         # 大文字処理: 大文字符を挿入
         if char.isalpha() and char.isupper():
             if not is_caps:
-                signals.append(CAPITAL_MARKER)
+                signals.append(CAPITAL_MARKER)# 英字が大文字なら大文字符（CAPITAL_MARKER）を挿入。
                 is_caps = True
             char_for_pattern = char.lower()
-        else:
-            # char.isalpha():Falseで and char.isupper():True になることはないのでは？想定していない特殊な文字ではあり得るんかな？
+        else:# 大文字ではない文字の場合(小文字または数字、ひらがな、記号)
             is_caps = False
-            char_for_pattern = char_for_pattern.lower() # ひらがな変換結果は小文字前提
-            # char_for_pattern = char.lower()ではだめ？
+            char_for_pattern = char_for_pattern.lower() # 安全のため小文字化
 
-        # 拗音、濁音、清音の処理
+        ### 要修正 ###
+        # --- 濁音・拗音の処理 ---
 
         # 濁音・半濁音
         if char in VOICED_MAP:
             base_char, mark = VOICED_MAP[char]
             signals.append(mark)
-            signals.append(BRAILLE_SIGNAL_MAP.get(base_char, '000000'))# 清音バイナリ信号取得。'000000'は未定義文字用のダミー
+            signals.append(BRAILLE_SIGNAL_MAP.get(base_char, '000000'))
+            # get()メソッドは、辞書からキーに対応する値を取得するためのメソッド。
+            # 対応表に存在しなければ '000000'（空白扱い）を返す安全策
             i += 1
             continue
 
-        #処理うまく出来てないと思うので再検討する必要あり
-        # 拗音（'きゃ'='き'+'ゃ'） - 拗音は点字では基本的に一文字扱い (ここでは分割)
-        # char not in VOICED_MAPにより「ぎゃ」等の一文字目濁音は取り扱っていない
-        if next_char in ['ゃ', 'ゅ', 'ょ'] and char not in VOICED_MAP: # char + next_char not in VOICED_MAP不要じゃね？
-            # 拗音の「ゃゅょ」自体も点字パターンを持つ
+        # 拗音（分割）※対象は「きゃ」「しゅ」「ちょ」など。
+        # 上で濁音・半濁音処理を先にしているため、「じゃ」「びょ」などはここには来ない。
+        if next_char in ['ゃ', 'ゅ', 'ょ'] and char not in VOICED_MAP:
             signals.append(BRAILLE_SIGNAL_MAP.get(char_for_pattern, '000000'))
             signals.append(BRAILLE_SIGNAL_MAP.get(next_char, '000000'))
             i += 2
             continue
 
-        # 通常文字 (ひらがな、アルファベット小文字、記号)
+        # 通常文字
         signals.append(BRAILLE_SIGNAL_MAP.get(char_for_pattern, '000000'))
         i += 1
 
@@ -143,55 +193,54 @@ def to_braille_signals(text):
 
 
 # --------------------------------------------------------
-# メイン実行ブロック
+# メイン実行ブロック (標準出力にバイナリ文字列を出力)
 # --------------------------------------------------------
 if __name__ == '__main__':
-    # コマンドライン引数のチェック
-    # sys.argv: 実行時にコマンドラインに入力された引数（argument）リストで、
-    # sys.argv[0]には、常に実行されたスクリプト自身のファイル名が格納される
-    if len(sys.argv) < 2:
-        print("エラー: 処理対象のMarkdownファイルパスを引数として指定して")
-        sys.exit(1)
+    # 上記のif文により、このファイルが直接実行された場合にのみ以下のコードを実行する。
+    # 他のモジュールからインポートされた場合にメインコードが実行されるのを防ぐ。
 
-    # 解析対象のMarkdownファイルパス
+    # コマンドライン引数のチェック (エラーメッセージは標準エラー出力へ)
+    if len(sys.argv) < 2:
+        # sys.argv[0] → 実行ファイル名
+        # sys.argv[1] → ユーザーが指定した.mdファイルのパス
+        print("エラー: 処理対象のMarkdownファイルパスを引数として指定してください。", file=sys.stderr)
+        sys.exit(1)
+        # プログラムを終了させるための関数。
+        # 引数1は異常終了を示す。
+
     md_file_path = sys.argv[1]
 
     # Markdownクリーンアップとテキスト抽出
     extracted_text = extract_clean_text_from_md(md_file_path)
+    if extracted_text is None:
+        sys.exit(1)
 
     # 可能な文字を全てひらがなへ変換
-    hiragana_output = to_hiragana(extracted_text) # "ROS とはなにか"
+    hiragana_output = to_hiragana(extracted_text)
 
     # 点字信号へ変換
     braille_signals = to_braille_signals(hiragana_output)
 
+    # 標準出力 (stdout) にバイナリ信号の連続文字列のみを出力
+    final_binary_string = "".join(s for s in braille_signals if s != '\n')
+    print(final_binary_string)
 
-    # 以降不要であればコメント化可能
+    # ------------------------------------------------------------------
+    #  視覚化/デバッグ情報は、すべて標準エラー出力 (sys.stderr) に出す
+    # ------------------------------------------------------------------
+    # sys.stderrは標準出力(stdout)とは別のチャンネルに出力されるため、
+    # stdoutのバイナリデータが他のプロセスでキャプチャされるのをさまたげない
 
-    # 結果の出力
-    print("--- 処理結果 ---")
-    print(f"入力ファイル: {md_file_path}")
-    print("\n--- 1. 可能な文字全てをひらがなへ変換した結果 ---")
-    print(hiragana_output)
-    print("\n--- 2. 点字信号 ---")
+    def print_debug_info(title, content):
+        """
+        本番の出力（PC3に渡す生の点字バイナリ列）と補助情報（ログ・可視化・デバッグ）
+        を別チャンネルに分離する設計。
 
-    # 信号の表示（Processing/ESP32への送信形式）
-    print("ピン配置順番:\n   14 |\n   25 |\n   36 |\n")
+        標準出力は他プロセスへ渡すための純粋なデータ専用にし、デバッグは標準エラーに流す。
+        """
+        print(f"\n--- {title} ---", file=sys.stderr)
+        print(content, file=sys.stderr)
 
-    for signal in braille_signals:
-        if signal == '\n':
-            print("\n[改行]")
-        else:
-            # バイナリ信号とピン配置を視覚的に表示
-            pin_14 = signal[0] + signal[3]
-            pin_25 = signal[1] + signal[4]
-            pin_36 = signal[2] + signal[5]
-            print(f"   {pin_14} |\n   {pin_25} |\n   {pin_36} |\n (Signal: {signal})\n")
-
-    print("\n----------------------------------")
-
-    # ファイルへの保存 (Processing/ESP32での読み込みを想定し、カンマ区切りなしで保存)
-    with open("braille_signals.txt", "w", encoding="utf-8") as f:
-        # 信号を連続した文字列として保存
-        f.write("".join(s for s in braille_signals if s != '\n'))
-    print(" 6桁バイナリ信号の連なりは braille_signals.txt として保存済")
+    # print_debug_info("デバッグ情報", f"入力ファイル: {md_file_path}")
+    # print_debug_info("ひらがな変換結果", hiragana_output)
+    print_debug_info("バイナリ信号総数", len(final_binary_string))
