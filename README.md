@@ -225,3 +225,7 @@ pip install opencv-python janome pyserial
 ### Notes
 - PC3のProcessingコード(client)から、シリアル通信を経て、ESP32へデータ送信可能となった。
 (VSCode環境のPC2_processing_Tenji_Server.pde起動→ProcessingIDEのtenji_clientBa.pde起動→sketch_dec26bを書き込み、成功)
+
+## 2025-12-30
+### Notes
+- 

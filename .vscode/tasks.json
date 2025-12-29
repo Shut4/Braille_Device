@@ -24,12 +24,12 @@
     },
 
     {
-      "label": "Run Processing Test(Img_Net_client)",
+      "label": "Run Processing Test(PC1_Img_Client)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        "--sketch=${workspaceFolder}\\Img_Net_client",
+        "--sketch=${workspaceFolder}\\PC1_Img_Client",
         "--run"
       ],
       "group": {
@@ -62,31 +62,12 @@
     },
 
     {
-      "label": "Run Processing Test(Img_Net_client)",
+      "label": "Run Processing Test(PC3_Tenji_Client)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        "--sketch=${workspaceFolder}\\Img_Net_client",
-        "--run"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      }
-    },
-
-    {
-      "label": "Run Processing Test(PC1_processing_Client)",
-      "type": "process",
-      "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
-      "args": [
-        "--force",
-        "--sketch=${workspaceFolder}\\PC1_processing_Client",
+        "--sketch=${workspaceFolder}\\PC3_Tenji_Client",
         "--run"
       ],
       "group": {
