@@ -5,12 +5,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Processing Test(PC2_processing_Server)",
+      "label": "Run Processing Test(PC1_Img_Client)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        "--sketch=${workspaceFolder}\\PC2_processing_Server",
+        "--sketch=${workspaceFolder}\\PC1_Img_Client",
         "--run"
       ],
       "group": {
@@ -24,12 +24,12 @@
     },
 
     {
-      "label": "Run Processing Test(PC1_Img_Client)",
+      "label": "Run Processing Test(PC2_processing_Server)",
       "type": "process",
       "command": "C:\\Users\\syuuu\\Downloads\\processing-4.3.4-windows-x64\\processing-4.3.4\\processing-java.exe",
       "args": [
         "--force",
-        "--sketch=${workspaceFolder}\\PC1_Img_Client",
+        "--sketch=${workspaceFolder}\\PC2_processing_Server",
         "--run"
       ],
       "group": {

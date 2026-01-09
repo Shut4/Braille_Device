@@ -7,7 +7,14 @@
 
 ## 画像受信・OCR・点字信号変換サーバー ドキュメント
 
-本ドキュメントは、 点字デバイス作成における、**役割・環境構築・スクリプト仕様・実行フロー** をまとめたものです。このデバイス開発において、現段階では、Processingを使用したかったので、PCを3台(PC1,PC2,PC3)意図的に使用しています。それぞれの役割に関して、
+
+
+ネットワーク連携型点字ディスプレイシステム
+# 1. プロジェクト概要
+本プロジェクトは、カメラで撮影した文字情報をリアルタイムで解析し、接続されたESP32点字デバイス上に物理的に出力する点字を表現するシステムです。
+
+# 2. システム構成図
+このREADMEは、点字デバイス作成における**役割・環境構築・スクリプト仕様・実行フロー** をまとめたものです。このデバイス開発において、Processingを使用したかったので、現段階ではPCを3台(PC1,PC2,PC3)意図的に使用しています。それぞれの役割に関して、
 
 * PC1: 画像撮影 → 画像送信(Processing: △△△)
 * PC2: 画像受信(Processing: PC2_processing_Server.pde) →
@@ -110,7 +117,7 @@ PBL_imgproc2/
 ## 実行手順(修正中: 2025-12-28時点)
 
 ### **Step 1: 画像撮影(PC1)**
-右上の実行ボタン ▷ から`PC1_camera_png.py`を実行し、画像が`imgs/captured_imagesにtest1.pngとして保存される`
+右上の実行ボタン ▷ から`PC1_camera_png.py`を実行し、画像が`imgs/captured_imagesにtest1.png`として保存される
 
 ---
 
@@ -226,6 +233,15 @@ pip install opencv-python janome pyserial
 - PC3のProcessingコード(client)から、シリアル通信を経て、ESP32へデータ送信可能となった。
 (VSCode環境のPC2_processing_Tenji_Server.pde起動→ProcessingIDEのtenji_clientBa.pde起動→sketch_dec26bを書き込み、成功)
 
+
 ## 2025-12-30
+### Changed
+- PC1,3のProcessing IDEコードをVSCode環境に移行し、まとめた。
+
+### Notes
+- PC1のProcessingコードは動作確認済みだが、PC3のProcessingコードは実機が手元になかったため未検証。
+
+
+## 2026-01-0
 ### Notes
 - 

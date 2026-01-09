@@ -21,8 +21,8 @@ void setup( ){
   textFont(font); // 生成したフォントを設定
   println(Serial.list());
   // サーバーに接続
-  myClient = new Client( this, "localhost", 12345 );
-  myport = new Serial(this, "COM3", 9600);
+  myClient = new Client( this, "192.168.9.3", 12345 );
+  myport = new Serial(this, "COM4", 9600);
 
   RecvMsg = " "; //メッセージの初期値
 }
